@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { exec } = require('child_process');
 const wait = require('node:timers/promises').setTimeout;
+const path = require('path');
 
 const driveLetters = [
     'A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:',
@@ -42,7 +43,5 @@ async function ipod_name(){
   await wait(500)
   return ipod_name
 }
-
-ipod_name().then(h => {console.log(h)})
 
 module.exports = { detect, ipod_name }

@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ipodie - Loading</title>
+</head>
+<style>
+* {
+    overflow:hidden
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.center-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+</style>
+<body style="animation:fadeInOpacity 5s">
+    <div class="center-screen">
+        <img style="height:200px;width: 200px;animation: pulse 2s infinite;" draggable="false" src="../img/icon.png" alt="">
+    </div>
+</body>
+</html>

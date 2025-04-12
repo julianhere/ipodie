@@ -4,18 +4,19 @@
   "description": "A modern iPod manager",
   "main": "index.js",
   "scripts": {
+    "start":"electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thejimi/ipodie.git"
+    "url": "git+https://github.com/julianhere/ipodie.git"
   },
-  "author": "thejimi",
+  "author": "julianhere",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/thejimi/ipodie/issues"
+    "url": "https://github.com/julianhere/ipodie/issues"
   },
-  "homepage": "https://github.com/thejimi/ipodie#readme",
+  "homepage": "https://github.com/julianhere/ipodie#readme",
   "dependencies": {
     "node-hid": "^3.1.2",
     "usb": "^1.8.1-libusb.6"
