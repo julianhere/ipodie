@@ -40,8 +40,44 @@ async function ipod_name(){
     ipod_name = stdout.split('\n')[1]
   });
 
-  await wait(500)
+  await wait(1000)
   return ipod_name
 }
 
-module.exports = { detect, ipod_name }
+async function ipod_space(){
+  var connection = detect()
+  if(!connection.connected) return {error:'iPod not connected.'}
+
+  var freeSpace;
+  var totalSpace;
+
+  exec(`wmic logicaldisk where "DeviceID='${connection.path}'" get FreeSpace,Size`, (err, stdout) => {
+    if (err) {
+      return console.error(`Error getting disk space: ${err}`);
+    }
+  
+    // Clean up and parse output
+    const lines = stdout.trim().split('\n');
+    const dataLine = lines[1]?.trim().split(/\s+/);
+  
+    if (dataLine && dataLine.length === 2) {
+      freeSpace = parseInt(dataLine[0], 10);
+      totalSpace = parseInt(dataLine[1], 10);
+  
+      const toGB = (bytes) => (bytes / (1024 ** 3)).toFixed(2)
+
+      freeSpace = toGB(freeSpace)
+      totalSpace = toGB(totalSpace)
+    } else {
+      console.error('Could not parse disk space info');
+    }
+  });
+
+  await wait(1000)
+  return {
+    free:freeSpace,
+    total:totalSpace
+  }
+}
+
+module.exports = { detect, ipod_name, ipod_space }

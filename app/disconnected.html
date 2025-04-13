@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ipodie</title>
+
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <link rel="stylesheet" href="./main.css">
+
+    <script>
+        tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        primary: {"50":"#fafafa","100":"#f5f5f5","200":"#e5e5e5","300":"#d4d4d4","400":"#a3a3a3","500":"#737373","600":"#525252","700":"#404040","800":"#262626","900":"#171717","950":"#0a0a0a"}
+      }
+    },
+    fontFamily: {
+      'body': [
+    'Montserrat', 
+    'ui-sans-serif', 
+    'system-ui', 
+    '-apple-system', 
+    'system-ui', 
+    'Segoe UI', 
+    'Roboto', 
+    'Helvetica Neue', 
+    'Arial', 
+    'Noto Sans', 
+    'sans-serif', 
+    'Apple Color Emoji', 
+    'Segoe UI Emoji', 
+    'Segoe UI Symbol', 
+    'Noto Color Emoji'
+  ],
+      'sans': [
+    'Montserrat', 
+    'ui-sans-serif', 
+    'system-ui', 
+    '-apple-system', 
+    'system-ui', 
+    'Segoe UI', 
+    'Roboto', 
+    'Helvetica Neue', 
+    'Arial', 
+    'Noto Sans', 
+    'sans-serif', 
+    'Apple Color Emoji', 
+    'Segoe UI Emoji', 
+    'Segoe UI Symbol', 
+    'Noto Color Emoji'
+  ]
+    }
+  }
+}
+    </script>
+</head>
+<body style="background-color: #202020;" class="text-white dark" onload="document.getElementById('type').innerHTML = `${localStorage.getItem(`model_${sessionStorage.getItem('ipod_name')}`)}`; document.getElementById('name').innerHTML = `${sessionStorage.getItem('ipod_name')}`">
+    <div class="noselect flex items-center justify-center h-screen">
+        <div class="container flex flex-col items-center px-4 py-12 mx-auto text-center justify-center">
+            <h2 class="max-w-2xl mx-auto text-4xl tracking-tight text-gray-800 xl:text-3xl dark:text-white">
+                Connection lost
+            </h2>
+    
+            <p class="max-w-4xl mt-4 text-center text-gray-500 dark:text-gray-300">
+                We lost connection with the iPod <span id="type">[type]</span> <span id="name">[name]</span>
+            </p>
+    
+            <div class="inline-flex w-full mt-6 sm:w-1/2">
+                <button onclick="window.location.href = ('./load.html')" class="inline-flex items-center justify-center w-full px-6 py-2 text-white duration-300 bg-neutral-600 rounded-lg hover:bg-neutral-500 focus:ring focus:ring-neutral-300 focus:ring-opacity-80">
+                    Refresh
+                </button>
+
+                <button onclick="end()" class="ml-4 inline-flex items-center justify-center w-full px-6 py-2 text-white duration-300 bg-neutral-600 rounded-lg hover:bg-neutral-500 focus:ring focus:ring-neutral-300 focus:ring-opacity-80">
+                  End session
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+  function end(){
+    const { ipcRenderer } = require('electron');
+
+    ipcRenderer.send('close-window');
+  }
+</script>
+</html>
