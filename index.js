@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const sound = require("sound-play");
 const path = require('path')
 
@@ -8,16 +8,18 @@ function createWindow() {
         width: 1270,
         webPreferences: {
             nodeIntegration: true,
-            enableRemoteModule: true
+            contextIsolation: false,
+            webSecurity: false,
         },
         autoHideMenuBar: true,
         title: 'Ipodie',
         minHeight:700,
-        minWidth:1270
+        minWidth:1270,
+        backgroundColor:'#202020'
     });
 
     win.setTitle('Ipodie');
-    win.loadFile('app/load.html');
+    win.loadFile(path.join(__dirname, 'app', 'load.html'));
 }
 
 function splashWindow() {
@@ -26,7 +28,7 @@ function splashWindow() {
         width: 800,
         webPrefepences: {
             nodeIntegration: true,
-            contextIsolation: false
+            contextIsolation: false,
         },
         autoHideMenuBar: true,
         title: 'Ipodie - Loading',
