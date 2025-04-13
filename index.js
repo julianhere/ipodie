@@ -1,4 +1,6 @@
 const { app, BrowserWindow } = require('electron');
+const sound = require("sound-play");
+const path = require('path')
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -20,11 +22,11 @@ function createWindow() {
 
 function splashWindow() {
     const win = new BrowserWindow({
-        height: 400,
-        width: 400,
+        height: 800,
+        width: 800,
         webPrefepences: {
             nodeIntegration: true,
-            enableRemoteModule: true
+            contextIsolation: false
         },
         autoHideMenuBar: true,
         title: 'Ipodie - Loading',
@@ -39,10 +41,12 @@ function splashWindow() {
     win.setTitle('Ipodie - Loading');
     win.loadFile('app/splash.html');
 
+    sound.play(path.join(__dirname, "img", "startup.wav"))
+
     setTimeout(() => {
         createWindow()
         win.close()
-    }, 5000);
+    }, 6000);
 }
 
 app.whenReady().then(splashWindow);
