@@ -6,8 +6,13 @@
 
     <script src="https://cdn.tailwindcss.com/"></script>
     <link rel="stylesheet" href="./main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.js" integrity="sha512-LThUFuq6Y8DTeSxG7VgJQu+3slKAhZ1u3z1EJdZESaVuQIEJ7TXC/DV8xNNEDFW01iWF4tUuzeC4RdiyrRPdRw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.3.0/alpine-ie11.js" integrity="sha512-6m6AtgVSg7JzStQBuIpqoVuGPVSAK5Sp/ti6ySu6AjRDa1pX8mIl1TwP9QmKXU+4Mhq/73SzOk6mbNvyj9MPzQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <script src="../scripts/home.js"></script>
+    <script src="../scripts/rename.js"></script>
+    <script src="../scripts/eject.js"></script>
 
     <script>
         tailwind.config = {
@@ -58,15 +63,123 @@
 }
     </script>
 </head>
-<body class="text-white noselect dark bg-neutral-900" onload="document.title = `Ipodie - ${sessionStorage.getItem('ipod_name')}`; ipod_name_and_type(); ipod_capacity();">
+<body class="text-white noselect dark bg-neutral-900" style="animation:fadeInOpacity 2s" onload="document.title = `Ipodie - ${sessionStorage.getItem('ipod_name')}`; ipod_name_and_type(); ipod_capacity();">
     <div class="flex h-full">
         <div class="w-80 bg-[#202020] p-6 flex flex-col items-center">
-          <img src="../img/logo_glow.png" draggable="false" id="ipod_img" alt="iPod" class="w-full mb-6" />
+          <img src="../img/logo_glow.png" draggable="false" id="ipod_img" alt="iPod" class="w-full mb-6 opacity-70" />
     
+          <div id="modal-rename" x-data="{ isOpen: false }" class="relative flex justify-center">      
+            <div x-show="isOpen" 
+                x-transition:enter="transition duration-300 ease-out"
+                x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
+                x-transition:leave="transition duration-150 ease-in"
+                x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
+                x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                class="fixed inset-0 z-10 overflow-y-auto" 
+                aria-labelledby="modal-title" role="dialog" aria-modal="true"
+            >
+                <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        
+                    <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-[#202020] sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">        
+                        <div id="modal-rename-content">
+                          <div>
+                            <div class="text-center">
+                                <h3 class="font-medium leading-6 text-neutral-800 dark:text-white" id="modal-title">
+                                    Rename this iPod
+                                </h3>
+        
+                                <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+                                    This only changes the drive name - To edit the in-device iPod name, use the iTunes app
+                                </p>
+                            </div>
+                        </div>
+
+                          <div class="mt-4">
+                            <div class="flex items-center mt-2 -mx-1">
+                                <input type="text" id="modal-rename-input" class="flex-1 block h-10 px-4 mx-1 text-sm text-neutral-700 bg-white border border-neutral-200 rounded-md dark:bg-neutral-900 dark:text-neutral-300 dark:border-neutral-700 focus:border-neutral-400 focus:ring-neutral-300 focus:ring-opacity-40 dark:focus:border-neutral-300 focus:outline-none focus:ring">
+                              </div>
+                              <p class="mb-0 mt-2 text-xs text-red-500 hidden" id="modal-rename-error">error</p>
+                        </div>
+        
+                        <div class="mt-2 sm:mt-3 sm:flex sm:items-center sm:-mx-2">
+                            <button @click="isOpen = false" class="w-full px-4 py-2 text-sm font-medium tracking-wide text-neutral-700 capitalize transition-colors duration-300 transform border border-neutral-200 rounded-md sm:w-1/2 sm:mx-2 dark:text-neutral-200 dark:border-neutral-700 dark:hover:bg-neutral-800 hover:bg-neutral-100 focus:outline-none focus:ring focus:ring-neutral-300 focus:ring-opacity-40">
+                                Cancel
+                            </button>
+        
+                            <button onclick="rename()" class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-neutral-600 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2 hover:bg-neutral-500 focus:outline-none focus:ring focus:ring-neutral-300 focus:ring-opacity-40">
+                                Rename
+                            </button>
+                        </div>
+                        </div>
+
+                        <div id="modal-rename-loading" class="hidden text-center">
+                          <div class="lds-hourglass"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-data="{ isOpen: false }" id="modal-eject" class="relative flex justify-center">
+          <div x-show="isOpen" 
+              x-transition:enter="transition duration-300 ease-out"
+              x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+              x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
+              x-transition:leave="transition duration-150 ease-in"
+              x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
+              x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+              class="fixed inset-0 z-10 overflow-y-auto" 
+              aria-labelledby="modal-title" role="dialog" aria-modal="true"
+          >
+              <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                  <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+      
+                  <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-[#202020] sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                    <div id="modal-eject-content">
+                      <div>
+                        <div class="flex items-center justify-center">
+                          <svg class="w-8 h-8 text-neutral-700 dark:text-neutral-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path fill="#ffffff" d="M224 32c13.5 0 26.3 5.6 35.4 15.6l176 192c12.9 14 16.2 34.3 8.6 51.8S419 320 400 320L48 320c-19 0-36.3-11.2-43.9-28.7s-4.3-37.7 8.6-51.8l176-192C197.7 37.6 210.5 32 224 32zM0 432c0-26.5 21.5-48 48-48l352 0c26.5 0 48 21.5 48 48s-21.5 48-48 48L48 480c-26.5 0-48-21.5-48-48z"/></svg>
+                        </div>
+    
+                        <div class="mt-2 text-center">
+                            <h3 class="text-lg font-medium leading-6 text-neutral-800 dark:text-white" id="modal-title">Are you sure?</h3>
+                            <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Unsaved changes will be lost & Ipodie will close.
+                            </p>
+                        </div>
+                    </div>
+    
+                    <div class="mt-2 sm:mt-3 sm:flex sm:items-center sm:-mx-2">
+                      <button @click="isOpen = false" class="w-full px-4 py-2 text-sm font-medium tracking-wide text-neutral-700 capitalize transition-colors duration-300 transform border border-neutral-200 rounded-md sm:w-1/2 sm:mx-2 dark:text-neutral-200 dark:border-neutral-700 dark:hover:bg-neutral-800 hover:bg-neutral-100 focus:outline-none focus:ring focus:ring-neutral-300 focus:ring-opacity-40">
+                          Cancel
+                      </button>
+  
+                      <button onclick="eject_device()" class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-neutral-600 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2 hover:bg-neutral-500 focus:outline-none focus:ring focus:ring-neutral-300 focus:ring-opacity-40">
+                          Confirm
+                      </button>
+                  </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
           <div class="text-center">
-            <h1 class="text-2xl font-semibold tracking-wide" id="ipod_name"></h1>
-            <p class="text-sm text-gray-300 mt-1">iPod <span id="ipod_type"></span></p>
-    
+            <h1 onclick="document.getElementById('modal-rename').setAttribute('x-data','{isOpen:true}')" data-tooltip-target="tooltip-edit-name" class="text-2xl font-semibold tracking-wide hover:text-neutral-300" style="cursor:text" id="ipod_name"></h1>
+
+            <div id="tooltip-edit-name" role="tooltip"  class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700">
+              Rename
+              <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+
+            <p onclick="window.location.href = ('./choose_model.html')" data-tooltip-placement="bottom" data-tooltip-target="tooltip-edit-type" class="text-sm text-neutral-200 mt-1 hover:text-neutral-300" style="cursor:pointer">iPod <span id="ipod_type"></span></p>
+
+            <div id="tooltip-edit-type" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700">
+              Change model
+              <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+
             <div class="mt-6 text-sm text-center" id="storage_data_loading">
                 <div class="lds-hourglass"></div>
             </div>
@@ -75,11 +188,27 @@
                 <div id="capacity_data" class="mt-6 space-y-1 text-sm">
                     <p>Capacity - <span id="capacity"></span></p>
                     <p>Tracks - ???</p>
+                    <p>Drive - <button onclick="open_drive()" data-tooltip-target="tooltip-drive-path" class="px-1 py-1 text-xs tracking-wide text-white capitalize transition-colors duration-300 transform bg-neutral-600 rounded-lg hover:bg-neutral-500 focus:outline-none focus:ring focus:ring-neutral-300 focus:ring-opacity-80"><span id="path"></span></button> <button onclick="document.getElementById('modal-eject').setAttribute('x-data', '{isOpen:true}')" data-tooltip-target="tooltip-drive-eject" class="px-1 py-1 text-xs tracking-wide text-white capitalize transition-colors duration-300 transform bg-neutral-600 rounded-lg hover:bg-neutral-500 focus:outline-none focus:ring focus:ring-neutral-300 focus:ring-opacity-80">&nbsp;<i class="fa-solid fa-eject"></i>&nbsp;</button><p>
                   </div>
 
-                <div class="mt-6 w-full bg-neutral-900  h-4 rounded overflow-hidden">
-                    <div id="progressBar" class="bg-neutral-600 h-full" style="width: 74.75%;"></div>
+                  <div id="tooltip-drive-eject" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700">
+                    Safely eject
+                    <div class="tooltip-arrow" data-popper-arrow></div>
                   </div>
+
+                  <div id="tooltip-drive-path" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700">
+                    Open in File Explorer
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                  </div>
+
+                <div data-tooltip-target="tooltip-space-used" class="mt-6 w-full bg-neutral-900 hover:bg-neutral-800 h-4 rounded overflow-hidden group">
+                    <div id="progressBar" class="bg-neutral-600 h-full group-hover:bg-neutral-500" style="width: 74.75%;"></div>
+                </div>
+
+                <div id="tooltip-space-used" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-neutral-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-neutral-700">
+                  <span id="space_used"></span>
+                  <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
                   <p class="mt-1 text-xs text-neutral-400"><span id="space_left"></span> space left</p>
             </div>
           </div>

@@ -80,4 +80,33 @@ async function ipod_space(){
   }
 }
 
-module.exports = { detect, ipod_name, ipod_space }
+async function ipod_rename(new_name){
+  var connection = detect()
+  if(!connection.connected) return {error:'iPod not connected.'}
+
+  var response;
+
+  exec(`wmic volume where "DriveLetter='${connection.path}'" set Label="${new_name}"`, (error, stdout, stderr) => {
+    if (error) {
+      if(error.message.includes('Description =')){
+        error = error.message.split('Description = ')[1]
+      }
+      response = {error:error}
+      return
+    }
+    if (stderr) {
+      if(stderr.message.includes('Description =')){
+        stderr = stderr.message.split('Description = ')[1]
+      }
+      response = {error:stderr.split('Description = ')[1]}
+      return
+    }
+    
+    response = {renamed:true, new_name:new_name, path:connection.path}
+  });
+
+  await wait(1000)
+  return response
+}
+
+module.exports = { detect, ipod_name, ipod_space, ipod_rename }

@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/julianhere/ipodie#readme",
   "dependencies": {
+    "itunes-api": "github:maddox/itunes-api",
     "node-hid": "^3.1.2",
     "sound-play": "^1.1.0",
     "usb": "^1.8.1-libusb.6"
